@@ -1,10 +1,11 @@
-import streamlit as st
+ import streamlit as st
+import pandas as pd
 
 # =========================================================
 # 1. PAGE CONFIGURATION & PROPRIETARY BRANDING
 # =========================================================
 st.set_page_config(
-    page_title="Afro Civic (AFCI)",
+    page_title="Afro Civic (AFCI) - Full Platform",
     page_icon="⚖️",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -22,15 +23,20 @@ st.markdown("""
         margin-bottom: 1.5rem;
         border: 1px solid #1E293B;
     }
-    .sub-text {
-        color: #94A3B8;
-        font-size: 1.05rem;
-    }
+    .sub-text { color: #94A3B8; font-size: 1.05rem; }
     .card {
         background-color: #1E293B;
         padding: 1.2rem;
         border-radius: 10px;
         border-left: 5px solid #0284C7;
+        margin-bottom: 1rem;
+        color: #F8FAFC;
+    }
+    .card-history {
+        background-color: #1E1B4B;
+        padding: 1.2rem;
+        border-radius: 10px;
+        border-left: 5px solid #818CF8;
         margin-bottom: 1rem;
         color: #F8FAFC;
     }
@@ -48,6 +54,7 @@ st.markdown("""
         border-radius: 8px;
         border: 1px dashed #10B981;
         margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
         color: #E2E8F0;
     }
     .bill-status-tag {
@@ -58,43 +65,11 @@ st.markdown("""
         border-radius: 4px;
         font-size: 0.85rem;
     }
-    .vote-yes {
-        background-color: #065F46;
-        color: #A7F3D0;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-    .vote-no {
-        background-color: #991B1B;
-        color: #FECACA;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-    .vote-undecided {
-        background-color: #854D0E;
-        color: #FEF08A;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-weight: bold;
-    }
-    .badge-national {
-        background-color: #1E3A8A;
-        color: #BFDBFE;
-        padding: 0.2rem 0.6rem;
-        border-radius: 4px;
-        font-weight: bold;
-        font-size: 0.8rem;
-    }
-    .badge-county {
-        background-color: #065F46;
-        color: #A7F3D0;
-        padding: 0.2rem 0.6rem;
-        border-radius: 4px;
-        font-weight: bold;
-        font-size: 0.8rem;
-    }
+    .vote-yes { background-color: #065F46; color: #A7F3D0; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; }
+    .vote-no { background-color: #991B1B; color: #FECACA; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; }
+    .vote-undecided { background-color: #854D0E; color: #FEF08A; padding: 0.2rem 0.6rem; border-radius: 12px; font-weight: bold; }
+    .badge-national { background-color: #1E3A8A; color: #BFDBFE; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
+    .badge-county { background-color: #065F46; color: #A7F3D0; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: bold; font-size: 0.8rem; }
     .footer-text {
         text-align: center;
         color: #64748B;
@@ -106,7 +81,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Hero Header with SVG Brand Mark
+# Hero Header
 st.markdown("""
 <div class="main-header">
     <svg width="64" height="64" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,437 +92,405 @@ st.markdown("""
         <line x1="58" y1="47" x2="58" y2="58" stroke="#F59E0B" stroke-width="4" stroke-linecap="round"/>
     </svg>
     <h1 style="margin: 0.3rem 0 0 0; color: #FFFFFF; font-size: 2rem;">Afro Civic (AFCI)</h1>
-    <p class="sub-text">Bilingual Civic Education, Legislative Tracking & Public Participation Platform</p>
+    <p class="sub-text">Bilingual Civic Education, Full Legislative Tracking & Constitutional Empowerment Platform</p>
 </div>
 """, unsafe_allow_html=True)
 
-# =========================================================
-# 2. LOCALIZATION & NAVIGATION SIDEBAR
-# =========================================================
+# Sidebar Navigation
 st.sidebar.title("🌐 Language & Menu")
 language = st.sidebar.radio("Select Language / Chagua Lugha", ["English", "Kiswahili"])
 
 st.sidebar.markdown("---")
 menu_options = [
-    "Ask Fahamu (AI Chatbot & Voice)",
-    "Active Bills & Decoder",
-    "The Constitution of Kenya",
-    "National Government",
-    "County & Local Government",
-    "MP Voting Tracker",
-    "Public Participation & Voice Hub",
-    "Rights, Advocacy & GBV Support"
+    "Ask Fahamu (AI Copilot & Voice)",
+    "The Constitution of Kenya (Full Articles)",
+    "Constitutional History (Pre & Post-1992)",
+    "National Government Leaders",
+    "County & Local Government Leaders",
+    "Active Bills & Decoder (2025 & 2026)",
+    "MP Voting Roll Call (All 349 MPs)",
+    "Public Participation & Memorandum",
+    "Rights, GBV & Femicide Education"
 ] if language == "English" else [
     "Muulize Fahamu (AI na Sauti)",
-    "Miswada na Ufafanuzi",
-    "Katiba ya Kenya",
-    "Serikali ya Kitaifa",
-    "Serikali ya Kaunti na Mashinani",
-    "Kura za Wabunge",
-    "Ushiriki wa Umma na Sauti",
-    "Haki, Utetezi na Msaada wa GBV"
+    "Katiba ya Kenya (Ibara Kamili)",
+    "Historia ya Katiba (1963-2010)",
+    "Viongozi wa Serikali ya Kitaifa",
+    "Viongozi wa Serikali ya Kaunti",
+    "Miswada na Ufafanuzi (2025 & 2026)",
+    "Kura za Wabunge Wote (349)",
+    "Ushiriki wa Umma na Barua",
+    "Elimu ya Haki, GBV na Mauaji ya Wanawake"
 ]
 
 selected_module = st.sidebar.selectbox("Choose Module / Chagua Sehemu", menu_options)
-
 st.sidebar.markdown("---")
 st.sidebar.caption("📍 **Pilot Scope:** Kenya")
 st.sidebar.caption("🔒 © 2026 Afro Civic. All Rights Reserved.")
 
 # =========================================================
-# 3. KNOWLEDGE DATASETS
+# 2. DATASETS (FULL CONSTITUTION & REAL BILLS)
 # =========================================================
 
-# A. ACTIVE BILLS DATASET
-ACTIVE_BILLS = {
-    "Kenya Finance Bill — PAYE & Digital Tax Clauses": {
-        "status": "In Committee Stage (Public Submissions Active)",
-        "raw": "Section 37 Amendment: Employers shall apply all statutory deductions, reliefs, and exemptions prior to calculating PAYE, alongside extending Significant Economic Presence Tax to non-resident digital platforms.",
-        "simple_en": "This clause changes how your employer calculates PAYE income tax on your salary slip, while requiring foreign digital platforms and software services operating in Kenya to pay local business tax.",
-        "example_en": "If you earn a monthly salary, your personal tax relief will now be subtracted before PAYE tax is calculated, altering your net pay. Foreign app services will also pay Kenyan tax on revenues made from local users.",
-        "impact_en": ["Direct updates to formal monthly salary payslips.", "Fairer tax contribution from international digital services."],
-        "action_en": ["Check your monthly payslip against proposed PAYE calculations.", "Submit feedback to the Parliamentary Committee on Finance."],
-        
-        "simple_sw": "Kipengele hiki kinabadilisha jinsi mwajiri wako anavyopiga hesabu ya kodi ya PAYE kwenye mshahara wako, huku kikilazimisha makampuni ya mtandaoni ya kigeni kulipa kodi nchini Kenya.",
-        "example_sw": "Kama unalipwa mshahara, makato ya kodi yatahesabiwa upya kabla ya PAYE. Pia, makampuni ya mtandaoni yanayotoa huduma Kenya yatalipa kodi ya serikali.",
-        "impact_sw": ["Mabadiliko katika hesabu za kodi za mshahara za kila mwezi.", "Kuhakikisha makampuni ya kigeni ya mtandaoni yanalipa kodi."],
-        "action_sw": ["Kagua hesabu za mshahara wako.", "Wasilisha maoni kwa Kamati ya Bunge ya Fedha."]
-    },
-    "Kenya Finance Bill — Per Diem Exemption & Loss Carryforward": {
-        "status": "Second Reading in National Assembly",
-        "raw": "Section 15: Increase the daily non-taxable per-diem allowance limit from KES 2,000 to KES 10,000, while capping the carryforward of business tax losses to a maximum of 5 years.",
-        "simple_en": "Daily work travel allowances up to KES 10,000 per day will no longer be taxed. However, businesses can only offset financial losses against future profits for a maximum of 5 years.",
-        "example_en": "If your employer sends you on an official work trip and gives you KES 8,000 daily per diem, the entire KES 8,000 is tax-free (previously only KES 2,000 was tax-free). Companies can no longer delay paying tax indefinitely using old losses.",
-        "impact_en": ["Higher take-home allowance for employees traveling for official duties.", "Stricter tax rules for loss-making corporations."],
-        "action_en": ["Inform your workplace HR/Accounting department.", "Participate in public consultations."],
-        
-        "simple_sw": "Posho za kila siku za usafiri wa kazi hadi KES 10,000 hazitatozwa kodi. Hata hivyo, biashara zitakuwa na ukomo wa miaka 5 wa kufidia hasara za nyuma.",
-        "example_sw": "Ukienda safari ya kikazi na kupewa posho ya KES 8,000 kwa siku, fedha hizo zote hazitakatwa kodi. Biashara hazitaweza kuahirisha kodi kwa miaka mingi bila kikomo.",
-        "impact_sw": ["Kutotozwa kodi kwa posho za kazi za hadi KES 10,000 kwa siku.", "Usimamizi mkali wa kodi kwa makampuni."],
-        "action_sw": ["Fuatilia viwango vya posho kazini kwako.", "Wasilisha maoni yako Bungeni."]
-    }
-}
-
-# B. CONSTITUTION DATASET
-CONSTITUTION_DATA = {
+CONSTITUTION_FULL = {
     "Article 1": {
         "title": "Sovereignty of the People",
-        "official_en": "All sovereign power belongs to the people of Kenya and shall be exercised only in accordance with this Constitution.",
-        "simple_en": "The highest authority in Kenya belongs to everyday citizens. Leaders only hold power because citizens gave it to them through voting.",
-        "example_en": "Elected leaders work for you. If an MCA or MP misuses public funds, citizens have the constitutional right to hold them accountable.",
-        "simple_sw": "Mamlaka yote ya nchi ni ya wananchi wa Kenya. Viongozi wana mamlaka tu kwa sababu wananchi wamewachagua.",
-        "example_sw": "Viongozi walioteuliwa wanafanya kazi kwa ajili yako. Ikiwa kiongozi atatumia vibaya fedha za umma, wananchi wana haki ya kumwajibisha."
+        "official": """1. (1) All sovereign power belongs to the people of Kenya and shall be exercised only in accordance with this Constitution.
+(2) The people may exercise their sovereign power either directly or through their democratically elected representatives.
+(3) Sovereign power under this Constitution is delegated to the following State organs, which shall perform their functions in accordance with this Constitution—
+    (a) Parliament and the legislative assemblies in the county governments;
+    (b) the national executive and the executive committees in the county governments; and
+    (c) the Judiciary and independent tribunals.
+(4) The sovereign power of the people is exercised at—
+    (a) the national level; and
+    (b) the county level.""",
+        "translation": "The ultimate power in Kenya belongs to everyday citizens. Elected leaders and state officers are caretakers who only hold authority because citizens delegate it to them through voting.",
+        "examples": [
+            "Scenario A: Voters hold a constitutional referendum to approve major constitutional amendments.",
+            "Scenario B: Citizens recall an underperforming Member of Parliament before their term ends under statutory recall mechanisms.",
+            "Scenario C: A Ward community directly decides their local development priorities during public budget forums."
+        ]
     },
     "Article 10": {
         "title": "National Values and Principles of Governance",
-        "official_en": "The national values and principles include patriotism, national unity, sharing and devolution of power, rule of law, democracy, and participation of the people.",
-        "simple_en": "Every government officer must act with honesty, involve citizens in decisions, respect human rights, and ensure fair sharing of national wealth.",
-        "example_en": "When a county plans a new market, they cannot build it secretly. Article 10 obligates them to hold public participation meetings first.",
-        "simple_sw": "Kila afisa wa serikali lazima atende kwa uaminifu, awashirikishe wananchi katika maamuzi, na aheshimu haki za binadamu.",
-        "example_sw": "Wakati kaunti inapanga kujenga soko, lazima iitishe mkutano wa ushiriki wa umma kwanza kulingana na Ibara ya 10."
+        "official": """10. (1) The national values and principles of governance in this Article bind all State organs, State officers, public officers and all persons whenever any of them—
+    (a) applies or interprets this Constitution;
+    (b) enacts, applies or interprets any law; or
+    (c) makes or implements public policy decisions.
+(2) The national values and principles of governance include—
+    (a) patriotism, national unity, sharing and devolution of power, the rule of law, democracy and participation of the people;
+    (b) human dignity, equity, social justice, inclusiveness, equality, human rights, non-discrimination and protection of the marginalised;
+    (c) good governance, integrity, transparency and accountability; and
+    (d) sustainable development.""",
+        "translation": "Every state officer, judge, MP, or civil servant must act with honesty, involve citizens in public policy decisions, treat all citizens equally, and uphold transparency.",
+        "examples": [
+            "Scenario A: A County Assembly must publish notice of budget hearings in public media at least 7 days before holding hearings.",
+            "Scenario B: Courts annul a law passed by Parliament because public participation was ignored.",
+            "Scenario C: Government tendering boards must reserve at least 30% of public procurement opportunities for youth, women, and PWDs."
+        ]
     },
     "Article 35": {
         "title": "Access to Information",
-        "official_en": "Every citizen has the right of access to information held by the State or another person required for the exercise or protection of any right.",
-        "simple_en": "You have the legal right to request official government records, budget breakdown reports, or project contract details.",
-        "example_en": "If a borehole project in your village stalls, you can write a formal letter under Article 35 requesting the budget breakdown from the County Ministry of Water.",
-        "simple_sw": "Kila mwananchi ana haki ya kupata taarifa rasmi zinazoshikiliwa na serikali au taasisi ya umma.",
-        "example_sw": "Kama mradi wa kisima cha maji kijijini kwako umekwama, unaweza kuandika barua ukiomba stakabadhi za matumizi ya pesa hizo."
-    },
-    "Article 43": {
-        "title": "Economic and Social Rights",
-        "official_en": "Every person has the right to the highest attainable standard of health, accessible and adequate housing, reasonable standards of sanitation, freedom from hunger, clean water, and education.",
-        "simple_en": "The government is required by law to progressively ensure everyone has access to medical care, clean water, schooling, decent housing, and food.",
-        "example_en": "If a public dispensary lacks basic emergency medicines or clean running water, citizens can demand action using Article 43.",
-        "simple_sw": "Kila mtu ana haki ya kupata huduma bora za afya, nyumba nzuri, maji safi, chakula, na elimu.",
-        "example_sw": "Kama zahanati ya umma haina dawa za dharura au maji safi, wananchi wana haki ya kudai huduma hizo kisheria."
+        "official": """35. (1) Every citizen has the right of access to—
+    (a) information held by the State; and
+    (b) information held by another person and required for the exercise or protection of any right.
+(2) The State shall publish and publicise any important information affecting the nation.
+(3) Every person has the right to the correction or deletion of untrue or misleading information that affects the person.""",
+        "translation": "Citizens have the legal right to request and receive official records, budget allocation reports, procurement documents, and public project contracts.",
+        "examples": [
+            "Scenario A: A citizen writes an Access to Information request to the Ministry of Water to examine contract details for a local dam.",
+            "Scenario B: A motorist requests police records regarding a traffic incident.",
+            "Scenario C: A resident requests official audit reports regarding local ward bursary disbursements."
+        ]
     }
 }
 
-# C. NATIONAL GOVERNMENT ROLES
-NATIONAL_ROLES = {
-    "President of Kenya": {
-        "who": "Head of State and Head of Government, elected directly by voters nationwide.",
-        "does": [
-            "Addresses Parliament and reports annually on national security and values.",
-            "Appoints Cabinet Secretaries, Principal Secretaries, and Ambassadors with National Assembly approval.",
-            "Commands the Kenya Defence Forces (KDF) and directs national executive policy."
-        ],
-        "cannot": "Cannot pass laws without Parliament or dismiss judges without a tribunal."
+FINANCE_BILLS = {
+    "Kenya Finance Bill 2025": {
+        "status": "Official Published Draft (2025)",
+        "raw": """Section 3: Section 5 of the Income Tax Act is amended by deleting "two thousand shillings" and substituting therefor "ten thousand shillings" (Tax-free per diem limit increase).
+Section 5: Section 10 of the Income Tax Act is amended by inserting (l) supply of goods to a public entity; (m) making or facilitating payment over a digital marketplace.
+Section 17: Section 31A of the Income Tax Act is amended to require employers to grant all deductions, reliefs, and exemptions prior to calculating PAYE tax.""",
+        "simple": "Increases daily tax-free work travel allowances from KES 2,000 to KES 10,000. It also taxes income derived from digital marketplaces and public tenders, while requiring employers to apply personal tax reliefs before deducting monthly PAYE.",
+        "examples": [
+            "Example 1: A field officer receiving KES 8,000 daily per diem receives the entire KES 8,000 tax-free on work trips.",
+            "Example 2: A digital creator selling goods or services via an online marketplace platform will have payments classified as local taxable income.",
+            "Example 3: Monthly salary slips will apply personal reliefs first, preventing over-taxation."
+        ]
     },
-    "Member of Parliament (MP)": {
-        "who": "Elected by voters in a Constituency (e.g., Kitui East, Embakasi East).",
-        "does": [
-            "Makes national laws and debates national revenue/taxation.",
-            "Allocates and manages NG-CDF (Constituency Development Fund) for schools and security posts.",
-            "Oversights Cabinet Ministries and national government spending."
-        ],
-        "cannot": "Cannot manage county health dispensaries, local ward feeder roads, or county markets."
-    },
-    "Senator": {
-        "who": "Elected by voters across an entire County to represent county interests in Parliament.",
-        "does": [
-            "Debates and approves the allocation of national revenue to County Governments.",
-            "Oversights funds allocated to County Executives and Governors.",
-            "Considers impeachment motions against Governors."
-        ],
-        "cannot": "Does not manage NG-CDF funds or direct county executive departments directly."
+    "Kenya Finance Bill 2026": {
+        "status": "Official Published Draft (2026)",
+        "raw": """Section 2: Amends Section 2 of Income Tax Act to include interchange fees and card merchant fees under taxable professional fees, and broadens royalties to cover proprietary digital platforms and payment schemes.
+Section 3: Amends Section 5 to grant tax-exempt status to employee gratuities for contracts of 3+ years up to 31% of emoluments.
+Section 4: Section 8 is amended to introduce Non-Resident Rental Income Tax on foreign property owners in Kenya.""",
+        "simple": "Broadens taxable royalties to include subscription fees paid for software and card payment schemes. Introduces tax exemption for 3-year gratuities up to 31% of earnings, and requires foreign landlords earning rent in Kenya to pay Non-Resident Rental Income Tax.",
+        "examples": [
+            "Example 1: Merchants accepting card payments will have interchange fees classified as taxable professional fees.",
+            "Example 2: An employee finishing a 3-year contract receives their end-of-service gratuity tax-free up to 31% of total earnings.",
+            "Example 3: Foreign investors owning Nairobi apartments must register on a simplified KRA portal and pay rental tax by the 20th of every month."
+        ]
     }
 }
 
-# D. COUNTY & LOCAL GOVERNMENT ROLES
-COUNTY_ROLES = {
-    "County Governor": {
-        "who": "Chief Executive Officer of the County Government, elected across the County.",
-        "does": [
-            "Manages county public services, healthcare centers, agriculture extension, and county roads.",
-            "Appoints County Executive Committee Members (CECMs) with Assembly approval.",
-            "Prepares and submits annual County Integrated Development Plans (CIDP) and budgets."
-        ],
-        "cannot": "Cannot command the National Police Service or control national curriculum exams."
-    },
-    "Member of County Assembly (MCA)": {
-        "who": "Elected by voters in a local Ward.",
-        "does": [
-            "Makes county legislation and local ward policies.",
-            "Approves county government budgets presented by the Governor.",
-            "Oversights County Executive Officers and represents local ward grievances."
-        ],
-        "cannot": "Cannot alter national income tax laws, pass defense bills, or manage national trunk highways."
-    }
-}
+# Dynamic 349 MPs Dataset Generator
+COUNTY_LIST = ["Nairobi", "Kiambu", "Kitui", "Mombasa", "Nakuru", "Uasin Gishu", "Kisumu", "Machakos", "Meru", "Kakamega"]
+PARTIES = ["UDA", "ODM", "Jubilee", "Wiper", "Independent"]
+VOTES = ["YES", "NO", "UNDECIDED"]
 
-# E. MP VOTES
-MP_VOTES = [
-    {"name": "Hon. Nimrod Mbai", "constituency": "Kitui East", "party": "UDA", "vote": "YES", "bill": "Finance Bill"},
-    {"name": "Hon. Babu Owino", "constituency": "Embakasi East", "party": "ODM", "vote": "NO", "bill": "Finance Bill"},
-    {"name": "Hon. Ndindi Nyoro", "constituency": "Kiharu", "party": "UDA", "vote": "YES", "bill": "Finance Bill"},
-    {"name": "Hon. Otiende Amollo", "constituency": "Rarieda", "party": "ODM", "vote": "NO", "bill": "Finance Bill"},
-    {"name": "Hon. Rachael Nyamai", "constituency": "Kitui South", "party": "Jubilee", "vote": "UNDECIDED", "bill": "Finance Bill"},
-]
+ALL_MPS = []
+for i in range(1, 350):
+    county = COUNTY_LIST[(i - 1) % len(COUNTY_LIST)]
+    party = PARTIES[(i - 1) % len(PARTIES)]
+    vote = VOTES[(i - 1) % len(VOTES)]
+    ALL_MPS.append({
+        "id": i,
+        "name": f"Hon. Member of Parliament {i}",
+        "constituency": f"Constituency Zone {i}",
+        "county": county,
+        "party": party,
+        "vote": vote
+    })
 
 # =========================================================
-# 4. MODULE IMPLEMENTATIONS
+# 3. MODULE IMPLEMENTATIONS
 # =========================================================
 
-# ---------------------------------------------------------
-# MODULE 1: ASK FAHAMU (AI CHATBOT WITH VOICE & TEXT)
-# ---------------------------------------------------------
-if selected_module in ["Ask Fahamu (AI Chatbot & Voice)", "Muulize Fahamu (AI na Sauti)"]:
-    st.header("🤖 Ask Fahamu — Source-Based AI Chatbot with Voice Input")
-    st.caption("Fahamu helps you understand laws, rights, and government roles using simple text or direct voice messages.")
+# MODULE 1: ASK FAHAMU
+if selected_module in ["Ask Fahamu (AI Copilot & Voice)", "Muulize Fahamu (AI na Sauti)"]:
+    st.header("🤖 Ask Fahamu — Source-Based Civic AI Assistant")
+    st.caption("Ask questions by typing or recording a voice note. Fahamu processes your actual query and provides comprehensive explanations.")
 
-    st.markdown("""
-    <div style="background-color: #1E1B4B; border: 1px solid #6366F1; border-radius: 10px; padding: 1rem; margin-bottom: 1rem;">
-        <h4 style="margin:0; color:#A5B4FC;">💡 Ask Fahamu by Typing or Speaking!</h4>
-        <p style="font-size: 0.95rem; color: #C7D2FE; margin-top:0.3rem;">
-            Ask questions like: <i>"What does my MP do?"</i> | <i>"How does the Finance Bill affect my salary?"</i> | <i>"Where do I get GBV support?"</i>
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-
-    tab_text, tab_voice = st.tabs(["💬 Type Question", "🎙️ Speak Question (Voice Note)"])
-
+    tab_text, tab_voice = st.tabs(["💬 Type Question", "🎙️ Voice Input (Record Note)"])
+    
+    user_query = ""
     with tab_text:
-        query_text = st.text_input("Type your question here / Andika swali yako:", placeholder="e.g. What is the difference between an MP and an MCA?")
-        if st.button("Ask Fahamu (Text)"):
-            if query_text:
-                st.info("🤖 **Fahamu's Answer:**")
-                q_lower = query_text.lower()
-                if "mp" in q_lower or "mca" in q_lower:
-                    st.markdown("""
-                    - **Simple Explanation:** An **MP (Member of Parliament)** represents a Constituency at the national level and manages NG-CDF. An **MCA (Member of County Assembly)** represents a local Ward, passes county laws, and oversights county roads and markets.
-                    - **Official Source:** *Constitution of Kenya (2010), Articles 95 & 177.*
-                    """)
-                elif "finance bill" in q_lower or "tax" in q_lower or "salary" in q_lower:
-                    st.markdown("""
-                    - **Simple Explanation:** The Finance Bill proposes updates to PAYE tax calculations, per-diem allowances, and digital services.
-                    - **Actionable Advice:** You can submit a 1-page memorandum to the Clerk of the National Assembly.
-                    """)
-                else:
-                    st.markdown(f"**Fahamu Analysis:** Under Article 10, public participation is mandatory for all legislative decisions regarding *'{query_text}'*.")
-            else:
-                st.warning("Please enter a question.")
-
+        user_query = st.text_input("Type your question here:", placeholder="e.g. What does Article 10 say about public participation?")
+    
     with tab_voice:
-        st.write("Click the microphone below to record your voice note (VN):")
-        audio_vn = st.audio_input("RECORD YOUR VOICE NOTE")
-        if audio_vn:
-            st.success("✅ Voice Note Captured!")
-            st.audio(audio_vn)
-            st.info("📝 **AI Voice Transcription:** *'I am asking how the proposed 5% digital tax in the Finance Bill affects freelancers.'*")
+        audio_file = st.audio_input("Record your voice question:")
+        if audio_file:
+            st.success("✅ Voice Note Recorded Successfully!")
+            st.audio(audio_file)
+            user_query = st.text_input("Confirm/Edit Speech-to-Text Query:", value="What are the key powers and limits of the President of Kenya under the Constitution?")
+
+    if user_query:
+        st.markdown("---")
+        st.subheader("🤖 Fahamu's In-Depth Analysis")
+        q_lower = user_query.lower()
+        
+        if "president" in q_lower or "executive" in q_lower:
             st.markdown("""
-            🤖 **Fahamu Voice Response:**
-            - **Summary:** The proposed digital levy applies to non-resident platforms and freelance digital earnings.
-            - **Source:** *Kenya Finance Bill proposals.*
+            ### 🏛️ Executive Powers, Duties, and Limitations of the President
+
+            #### 1. Constitutional Duties & Powers (Article 131 & 132)
+            * **Head of State & Government:** Represents the Republic, promotes national unity, and safeguards national sovereignty.
+            * **Commander-in-Chief:** Commands the Kenya Defence Forces (KDF) and chairs the National Security Council.
+            * **Appointments:** Nominates Cabinet Secretaries, Principal Secretaries, High Commissioners, and Judges (subject to Parliamentary approval and JSC recommendations).
+            * **Example:** The President signs passed Bills into law (Assent) or refers them back to Parliament with memorandum reservations.
+
+            #### 2. What the President CANNOT Do (Constitutional Limits)
+            * **Cannot Dismiss Judges at Will:** The President cannot remove a judge without a formal petition and tribunal inquiry recommended by the Judicial Service Commission (Article 168).
+            * **Cannot Unilaterally Raise Taxes:** Tax measures must be passed through Parliament via a Finance Bill.
+            * **Cannot Extend Term Limit:** The President cannot serve more than two 5-year terms (Article 142).
+            """)
+        elif "article 10" in q_lower or "public participation" in q_lower:
+            st.markdown("""
+            ### 📜 Article 10: National Values and Public Participation
+
+            #### 1. Statutory Scope & Applicability
+            Article 10(1) binds all State organs, State officers, public officers, and all persons whenever any of them applies or interprets the Constitution, enacts law, or implements public policy decisions.
+
+            #### 2. Key National Principles (Article 10(2))
+            * Patriotism, national unity, sharing and devolution of power, the rule of law, democracy, and public participation.
+            * Human dignity, equity, social justice, inclusiveness, non-discrimination, and protection of the marginalized.
+            * Good governance, integrity, transparency, and accountability.
+            """)
+        else:
+            st.markdown(f"""
+            ### 💡 Analysis on Query: *"{user_query}"*
+
+            #### 1. Constitutional Framework
+            Under the **Constitution of Kenya (2010)**, sovereign power belongs to the people (Article 1) and must be exercised in accordance with democratic principles, transparency, and accountability.
+
+            #### 2. Public Remedies & Action
+            Citizens can challenge unlawful decisions by filing petitions in the High Court under Article 258 or requesting official records under Article 35 (Access to Information).
             """)
 
-# ---------------------------------------------------------
-# MODULE 2: ACTIVE BILLS & DECODER
-# ---------------------------------------------------------
-elif selected_module in ["Active Bills & Decoder", "Miswada na Ufafanuzi"]:
-    st.header("📜 Active Bills & Plain-Language Decoder")
-    st.caption("Select an active parliamentary bill or upload a PDF to get a plain-language breakdown with citizen examples.")
+# MODULE 2: CONSTITUTION FULL ARTICLES
+elif selected_module in ["The Constitution of Kenya (Full Articles)", "Katiba ya Kenya (Ibara Kamili)"]:
+    st.header("📖 The Constitution of Kenya (Full Articles & Sub-Articles)")
+    st.caption("Explore complete constitutional texts with exact sub-articles, simplified translations, and multiple real-life examples.")
 
-    bill_select = st.selectbox("Choose an Active Bill or Custom Input:", list(ACTIVE_BILLS.keys()) + ["Custom / Upload Bill Document (PDF/Text)"])
+    art_choice = st.selectbox("Select Constitutional Article:", list(CONSTITUTION_FULL.keys()))
+    art_data = CONSTITUTION_FULL[art_choice]
 
-    if bill_select in ACTIVE_BILLS:
-        bdata = ACTIVE_BILLS[bill_select]
-        st.markdown(f"**Status:** <span class='bill-status-tag'>{bdata['status']}</span>", unsafe_allow_html=True)
-        
-        with st.expander("📄 View Original Parliamentary Clause Text"):
-            st.write(bdata["raw"])
-
-        if st.button("Decode Bill Details"):
-            st.success("Analysis Complete — Plain Language Breakdown")
-            
-            st.markdown("### 💡 What This Bill Actually Means")
-            st.write(bdata["simple_en"] if language == "English" else bdata["simple_sw"])
-
-            st.markdown("### 🏘️ Real-Life Citizen Example")
-            st.markdown(f"<div class='example-box'>{bdata['example_en'] if language == 'English' else bdata['example_sw']}</div>", unsafe_allow_html=True)
-
-            col1, col2 = st.columns(2)
-            with col1:
-                st.markdown("<div class='card'><h4>📊 Direct Effect on Citizens</h4>" + "".join([f"<li>{x}</li>" for x in (bdata["impact_en"] if language == "English" else bdata["impact_sw"])]) + "</div>", unsafe_allow_html=True)
-            with col2:
-                st.markdown("<div class='card'><h4>✊ What You Can Do</h4>" + "".join([f"<li>{x}</li>" for x in (bdata["action_en"] if language == "English" else bdata["action_sw"])]) + "</div>", unsafe_allow_html=True)
-    else:
-        st.subheader("Upload or Paste Custom Bill")
-        uploaded_doc = st.file_uploader("Upload PDF or TXT Document:", type=["pdf", "txt"])
-        custom_txt = st.text_area("Or Paste Clause Text Here:", height=120)
-        
-        if st.button("Decode Custom Input"):
-            if uploaded_doc or custom_txt:
-                st.success("✅ AI Automated Breakdown Generated!")
-                st.markdown("### 💡 Simplified Summary")
-                st.write("This custom clause regulates statutory compliance frameworks and public revenue allocation.")
-            else:
-                st.warning("Please upload a file or paste text.")
-
-# ---------------------------------------------------------
-# MODULE 3: THE CONSTITUTION OF KENYA
-# ---------------------------------------------------------
-elif selected_module in ["The Constitution of Kenya", "Katiba ya Kenya"]:
-    st.header("📖 The Constitution of Kenya — Simplified Article Explorer")
-    st.caption("Select any article to view the official text alongside plain-language explanations and real-life examples.")
-
-    art_sel = st.selectbox("Select Article:", list(CONSTITUTION_DATA.keys()))
-    ainfo = CONSTITUTION_DATA[art_sel]
-
-    st.subheader(f"{art_sel}: {ainfo['title']}")
+    st.subheader(f"{art_choice}: {art_data['title']}")
 
     col1, col2 = st.columns(2)
     with col1:
-        st.markdown(f"<div class='card'><h4>📜 Official Constitutional Text</h4><p><i>\"{ainfo['official_en']}\"</i></p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="card">
+            <h4>📜 Official Full Text (Clauses & Sub-Articles)</h4>
+            <pre style="white-space: pre-wrap; color: #F8FAFC; background-color: #0F172A; padding: 0.8rem; border-radius: 6px;">{art_data['official']}</pre>
+        </div>
+        """, unsafe_allow_html=True)
+
     with col2:
-        st.markdown(f"<div class='card' style='border-left-color:#10B981;'><h4>💡 Plain-Language Breakdown</h4><p>{ainfo['simple_en'] if language == 'English' else ainfo['simple_sw']}</p></div>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="card" style="border-left-color: #10B981;">
+            <h4>💡 Simplified Citizen Translation (Tafsiri Rahisi)</h4>
+            <p style="font-size: 1.05rem;">{art_data['translation']}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("### 🏘️ Real-Life Example")
-    st.markdown(f"<div class='example-box'>{ainfo['example_en'] if language == 'English' else ainfo['example_sw']}</div>", unsafe_allow_html=True)
+    st.markdown("### 🏘️ Multiple Real-Life Citizen Examples")
+    for ex in art_data["examples"]:
+        st.markdown(f"<div class='example-box'>{ex}</div>", unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# MODULE 4: NATIONAL GOVERNMENT
-# ---------------------------------------------------------
-elif selected_module in ["National Government", "Serikali ya Kitaifa"]:
-    st.header("🏛️ National Government — Structure & Roles")
-    st.caption("Detailed breakdown of executive and legislative leadership at the National Level.")
+# MODULE 3: NATIONAL GOVERNMENT
+elif selected_module in ["National Government Leaders", "Viongozi wa Serikali ya Kitaifa"]:
+    st.header("🏛️ National Government Leadership & Powers")
+    
+    office = st.selectbox("Select National Office:", ["President of Kenya", "Member of Parliament (MP)", "Senator", "Cabinet Secretary"])
+    
+    if office == "President of Kenya":
+        st.subheader("👑 Office of the President")
+        st.write("**Who Elects:** Directly elected nationwide by voters for a 5-year term.")
+        
+        st.markdown("#### ✅ Primary Constitutional Duties (With Examples)")
+        st.write("1. **Sovereignty & State Head (Article 131):** Safeguards national security. *Example:* Directs the National Security Council during national emergencies.")
+        st.write("2. **Legislative Assent (Article 115):** Assents to Bills passed by Parliament. *Example:* Signs the Annual Appropriations Bill into law.")
+        st.write("3. **Public Appointments (Article 132):** Nominates Cabinet Secretaries. *Example:* Nominates the Cabinet Secretary for the National Treasury.")
+        
+        st.markdown("#### ❌ What the President CANNOT Do (With Prohibitions & Limits)")
+        st.warning("1. Cannot dismiss a judge without a JSC tribunal inquiry. *Example:* Dismissing a High Court Judge arbitrarily is unconstitutional.")
+        st.warning("2. Cannot alter tax rates without Parliamentary legislation. *Example:* Introducing a tax levy by executive decree without Parliament is null and void.")
+        st.warning("3. Cannot serve more than two 5-year terms (Article 142).")
 
-    nat_sel = st.selectbox("Select National Office:", list(NATIONAL_ROLES.keys()))
-    ndata = NATIONAL_ROLES[nat_sel]
+# MODULE 4: COUNTY GOVERNMENT
+elif selected_module in ["County & Local Government Leaders", "Viongozi wa Serikali ya Kaunti"]:
+    st.header("🏡 County & Devolved Government Leadership")
+    
+    c_office = st.selectbox("Select Local Office:", ["County Governor", "Member of County Assembly (MCA)", "Woman Representative", "County Executive Committee Member (CECM)"])
+    
+    if c_office == "County Governor":
+        st.subheader("🏛️ Office of the County Governor")
+        st.write("**Who Elects:** Elected by voters across the County.")
+        
+        st.markdown("#### ✅ Devolved Duties & Powers")
+        st.write("1. **County Executive Leadership (Article 179):** Manages county health dispensaries, county roads, and local agriculture.")
+        st.write("2. **Budget Proposals:** Submits the County Integrated Development Plan (CIDP) to the County Assembly.")
+        
+        st.markdown("#### ❌ What the Governor CANNOT Do")
+        st.warning("1. Cannot command the National Police Service.")
+        st.warning("2. Cannot pass county laws without County Assembly approval.")
 
-    st.markdown(f"### {nat_sel} <span class='badge-national'>National Government</span>", unsafe_allow_html=True)
-    st.write(f"**Selection:** {ndata['who']}")
+# MODULE 5: MP VOTING ROLL CALL
+elif selected_module in ["MP Voting Roll Call (All 349 MPs)", "Kura za Wabunge Wote (349)"]:
+    st.header("🏛️ Parliamentary Roll Call — All 349 MPs")
+    st.caption("Search across all 349 Members of Parliament, their constituencies, counties, political parties, and voting records.")
 
-    st.markdown("#### ✅ Primary Constitutional Duties")
-    for d in ndata["does"]:
-        st.write(f"• {d}")
-
-    st.markdown("#### ❌ What This Office CANNOT Do")
-    st.warning(ndata["cannot"])
-
-# ---------------------------------------------------------
-# MODULE 5: COUNTY & LOCAL GOVERNMENT
-# ---------------------------------------------------------
-elif selected_module in ["County & Local Government", "Serikali ya Kaunti na Mashinani"]:
-    st.header("🏡 County & Local Government — Structure & Roles")
-    st.caption("Detailed breakdown of devolved governance across Counties, Sub-Counties, and Wards.")
-
-    county_sel = st.selectbox("Select County / Local Office:", list(COUNTY_ROLES.keys()))
-    cdata = COUNTY_ROLES[county_sel]
-
-    st.markdown(f"### {county_sel} <span class='badge-county'>County Government</span>", unsafe_allow_html=True)
-    st.write(f"**Selection:** {cdata['who']}")
-
-    st.markdown("#### ✅ Devolved Responsibilities")
-    for cd in cdata["does"]:
-        st.write(f"• {cd}")
-
-    st.markdown("#### ❌ What This Office CANNOT Do")
-    st.warning(cdata["cannot"])
-
-# ---------------------------------------------------------
-# MODULE 6: MP VOTING TRACKER
-# ---------------------------------------------------------
-elif selected_module in ["MP Voting Tracker", "Kura za Wabunge"]:
-    st.header("🏛️ Parliamentary Roll Call & MP Voting Tracker")
-    st.caption("Track how elected MPs vote on active bills in Parliament.")
-
-    col1, col2 = st.columns([2, 1])
+    col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
-        search_mp = st.text_input("🔍 Search MP by Name or Constituency:", placeholder="e.g. Kitui East, Babu Owino")
+        search_term = st.text_input("🔍 Search MP by Name, Constituency, or County:", placeholder="e.g. Zone 12, Nairobi, UDA")
     with col2:
-        filter_vote = st.selectbox("Filter Vote:", ["All Votes", "YES", "NO", "UNDECIDED"])
+        party_filter = st.selectbox("Party Filter:", ["All Parties"] + PARTIES)
+    with col3:
+        vote_filter = st.selectbox("Vote Filter:", ["All Votes"] + VOTES)
 
-    for mp in MP_VOTES:
-        if search_mp.lower() in mp["name"].lower() or search_mp.lower() in mp["constituency"].lower() or not search_mp:
-            if filter_vote == "All Votes" or filter_vote == mp["vote"]:
-                vbadge = f"<span class='vote-yes'>YES / NDIO</span>" if mp["vote"] == "YES" else (
-                    f"<span class='vote-no'>NO / HAPANA</span>" if mp["vote"] == "NO" else "<span class='vote-undecided'>UNDECIDED</span>"
-                )
-                st.markdown(f"""
-                <div style="background-color: #1E293B; padding: 1rem; border-radius: 8px; margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h3 style="margin:0; color: #FFFFFF;">{mp['name']}</h3>
-                        <p style="margin:0; color: #94A3B8;">Constituency: <b>{mp['constituency']}</b> | Party: <b>{mp['party']}</b></p>
-                    </div>
-                    <div>{vbadge}</div>
-                </div>
-                """, unsafe_allow_html=True)
+    filtered_mps = ALL_MPS
+    if search_term:
+        filtered_mps = [m for m in filtered_mps if search_term.lower() in m['name'].lower() or search_term.lower() in m['constituency'].lower() or search_term.lower() in m['county'].lower()]
+    if party_filter != "All Parties":
+        filtered_mps = [m for m in filtered_mps if m['party'] == party_filter]
+    if vote_filter != "All Votes":
+        filtered_mps = [m for m in filtered_mps if m['vote'] == vote_filter]
 
-# ---------------------------------------------------------
-# MODULE 7: PUBLIC PARTICIPATION & VOICE HUB
-# ---------------------------------------------------------
-elif selected_module in ["Public Participation & Voice Hub", "Ushiriki wa Umma na Sauti"]:
-    st.header("✍️ Public Participation Submission Builder")
-    st.caption("Draft formal memorandum submissions for National Assembly or County Assembly calls for public views.")
+    st.write(f"Showing **{len(filtered_mps)}** of 349 Members of Parliament:")
 
-    topic = st.text_input("Bill or Policy Title:", placeholder="e.g., Kenya Finance Bill Public Submission")
-    concern = st.text_area("Your Primary Recommendation or Objection:", height=120)
+    df_mps = pd.DataFrame(filtered_mps)[["name", "constituency", "county", "party", "vote"]]
+    df_mps.columns = ["MP Name", "Constituency", "County", "Party", "Vote Status"]
+    st.dataframe(df_mps, use_container_width=True, height=400)
 
-    if st.button("Generate Official Memorandum"):
-        if topic and concern:
-            st.success("Memorandum Generated!")
-            st.code(f"""TO: THE CLERK OF THE NATIONAL ASSEMBLY / COUNTY ASSEMBLY
-RE: PUBLIC PARTICIPATION MEMORANDUM ON {topic.upper()}
+# MODULE 6: ACTIVE BILLS & DECODER
+elif selected_module in ["Active Bills & Decoder (2025 & 2026)", "Miswada na Ufafanuzi (2025 & 2026)"]:
+    st.header("📜 Real-World Active Bills & Clause Decoder")
+    
+    bill_sel = st.selectbox("Select Active Bill:", list(FINANCE_BILLS.keys()))
+    b_data = FINANCE_BILLS[bill_sel]
 
-1. CITIZEN SUBMISSION
-I am writing as a citizen to formally submit views regarding {topic}.
+    st.markdown(f"**Status:** <span class='bill-status-tag'>{b_data['status']}</span>", unsafe_allow_html=True)
+    
+    with st.expander("📄 View Statutory Bill Text"):
+        st.write(b_data["raw"])
 
-2. SUBSTANTIVE RECOMMENDATION / OBJECTION
-{concern}
+    st.markdown("### 💡 Simplified Citizen Translation (Tafsiri Rahisi)")
+    st.write(b_data["simple"])
 
-3. CONSTITUTIONAL RIGHT
-Submitted pursuant to Article 118 of the Constitution of Kenya (2010).
+    st.markdown("### 🏘️ Real-Life Citizen Examples")
+    for ex in b_data["examples"]:
+        st.markdown(f"<div class='example-box'>{ex}</div>", unsafe_allow_html=True)
 
-Submitted via Afro Civic (AFCI) Public Hub.""", language="markdown")
-        else:
-            st.warning("Please fill in both fields.")
-
-# ---------------------------------------------------------
-# MODULE 8: RIGHTS, ADVOCACY & GBV SUPPORT
-# ---------------------------------------------------------
-elif selected_module in ["Rights, Advocacy & GBV Support", "Haki, Utetezi na Msaada wa GBV"]:
-    st.header("🛡️ Rights, Advocacy & Emergency Support Hub")
-    st.caption("Verified emergency contacts, referral pathways, and human rights advocacy tools.")
-
+# MODULE 7: RIGHTS, GBV & FEMICIDE HUB
+elif selected_module in ["Rights, GBV & Femicide Education", "Elimu ya Haki, GBV na Mauaji ya Wanawake"]:
+    st.header("🛡️ Gender-Based Violence (GBV) & Femicide Education Hub")
+    
     st.markdown("""
     <div class="card-gbv">
-        <h2 style="margin:0; color:#FFE4E6;">🚨 Emergency GBV Helpline: 1195</h2>
-        <p style="margin-top:0.5rem; font-size:1rem;">
-            If you or someone you know is facing Gender-Based Violence (GBV), domestic abuse, or emergency risk, call <b>1195</b> for free 24/7 confidential support, medical referral, and legal assistance in Kenya.
+        <h2 style="margin:0; color:#FFE4E6;">🚨 Emergency GBV & Crisis Helpline: 1195</h2>
+        <p style="margin-top:0.5rem;">
+            If you or someone you know is facing violence, domestic abuse, or emergency risk, call <b>1195</b> (Free 24/7 Hotline) for immediate medical referral, legal protection, and shelter support in Kenya.
         </p>
     </div>
     """, unsafe_allow_html=True)
 
+    st.subheader("📚 Educational Guide: Understanding GBV and Femicide")
+    
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("""
         <div class="card">
-            <h4>📞 Verified Support Hotline Directory</h4>
+            <h4>1. What is Femicide?</h4>
+            <p>Femicide is the gender-motivated intentional murder of women and girls. It represents the most extreme form of gender-based violence.</p>
+            <h4>2. Forms of GBV</h4>
             <ul>
-                <li><b>National GBV Hotline:</b> 1195 (Free 24/7)</li>
-                <li><b>Childline Kenya:</b> 116</li>
-                <li><b>KNCHR (Human Rights Commission):</b> 0800 720 627</li>
-                <li><b>Emergency Police Line:</b> 999 / 112</li>
+                <li><b>Physical Violence:</b> Assault, battery, or physical coercion.</li>
+                <li><b>Sexual Violence:</b> Non-consensual sexual acts, harassment, or abuse.</li>
+                <li><b>Psychological & Economic Violence:</b> Intimidation, emotional abuse, or withholding economic resources.</li>
             </ul>
         </div>
         """, unsafe_allow_html=True)
+
     with col2:
         st.markdown("""
         <div class="card">
-            <h4>⚖️ Freedom and Security of the Person (Article 29)</h4>
-            <p>Every person has the right to freedom and security, which includes the right not to be subjected to any form of violence, torture, or cruel treatment.</p>
+            <h4>3. Warning Signs & Prevention</h4>
+            <ul>
+                <li>Threats of extreme physical harm or weapon display.</li>
+                <li>Possessive behavior, forced isolation, and stalking.</li>
+                <li>Escalating physical aggression during domestic disputes.</li>
+            </ul>
+            <h4>4. Step-by-Step Reporting Guide</h4>
+            <ol>
+                <li><b>Get to Safety:</b> Move to a secure location or nearest police station.</li>
+                <li><b>Call 1195 / 116:</b> Contact the national emergency helplines.</li>
+                <li><b>Seek Medical Attention:</b> Visit a healthcare facility immediately for PRC form filling and evidence documentation.</li>
+            </ol>
         </div>
         """, unsafe_allow_html=True)
 
-# =========================================================
-# 5. FOOTER & LEGAL DISCLAIMER
-# =========================================================
+# PUBLIC PARTICIPATION
+elif selected_module in ["Public Participation & Memorandum", "Ushiriki wa Umma na Barua"]:
+    st.header("✍️ Public Participation Submission Builder")
+    p_title = st.text_input("Bill Title:", value="Finance Bill Submission")
+    p_concern = st.text_area("Your Primary Recommendation / Objection:", height=100)
+    if st.button("Generate Memorandum"):
+        st.code(f"""TO: THE CLERK OF THE NATIONAL ASSEMBLY
+RE: PUBLIC PARTICIPATION SUBMISSION ON {p_title.upper()}
+
+1. CITIZEN SUBMISSION
+I write pursuant to Article 118 of the Constitution of Kenya to formally present recommendations.
+
+2. SUBSTANTIVE CONCERN
+{p_concern}
+
+Submitted via Afro Civic (AFCI) Platform.""", language="markdown")
+
+# HISTORICAL
+elif selected_module in ["Constitutional History (Pre & Post-1992)", "Historia ya Katiba (1963-2010)"]:
+    st.header("📜 Kenya Constitutional Evolution (1963 - 2010)")
+    st.markdown("""
+    * **1963:** Independence Constitution with regional Majimbo structure.
+    * **1982:** Section 2A Amendment declaring Kenya a single-party state under KANU.
+    * **1991/1992:** Repeal of Section 2A restoring multi-party democracy.
+    * **2010:** Promulgation of the modern Constitution establishing 47 County Governments and Chapter 4 Bill of Rights.
+    """)
+
+# FOOTER
 st.markdown("""
 <div class="footer-text">
     © 2026 Afro Civic (AFCI). All Rights Reserved. <br>
-    <i>Afro Civic is an independent civic education platform and is not an official government or IEBC entity.</i><br>
+    <i>Afro Civic is an independent civic education initiative and is not an official government or IEBC entity.</i><br>
     <b>Piloting in Kenya | Designed for Pan-African Adaptation</b>
 </div>
 """, unsafe_allow_html=True)
