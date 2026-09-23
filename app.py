@@ -1,18 +1,201 @@
 """
-Comprehensive Civic Guide & Institutional Framework of the 13th Parliament of Kenya
-----------------------------------------------------------------------------------
-This script encodes statutory breakdowns, public participation memorandum generators,
-civic advocacy frameworks, constitutional summaries, and structural records for both 
-the Senate and the National Assembly of Kenya.
+Unified Civic, Statutory, and Legislative Framework (Kenya)
+------------------------------------------------------------
+1. Finance Bill 2025 (Part I & Part II Object-Oriented Tax Implementation)
+2. Finance Bill 2026 Statutory & Plain-Language Breakdowns
+3. Public Participation Email Generator & Civic Advocacy Frameworks
+4. 13th Parliament of Kenya (Senate & National Assembly Structure & Leadership)
 """
 
+import calendar
 from dataclasses import dataclass, field
 from datetime import date
-from typing import List, Dict, Optional, Union
+from typing import Dict, List, Optional, Union
+
+# ==============================================================================
+# SECTION 1: FINANCE BILL 2025 (PART I & PART II - PROGRAMMATIC LOGIC)
+# ==============================================================================
+
+# --- META DATA & PREAMBLE ---
+GAZETTE_SUPPLEMENT = "Kenya Gazette Supplement No. 63"
+NATIONAL_ASSEMBLY_BILL_NO = 19
+PUBLICATION_DATE = date(2025, 5, 6)
+PUBLICATION_PLACE = "Nairobi"
+BILL_TITLE = "THE FINANCE BILL, 2025"
+ACT_PURPOSE = (
+    "AN ACT of Parliament to amend the laws relating to various taxes and duties; "
+    "and for matters incidental thereto."
+)
+ENACTING_BODY = "Parliament of Kenya"
+
+
+# --- PART I: PRELIMINARY ---
+class CommencementDates:
+    SECTION_12_AND_56 = date(2026, 1, 1)
+    ALL_OTHER_SECTIONS = date(2025, 7, 1)
+
+    @classmethod
+    def get_effective_date(cls, section_number: int) -> date:
+        """Section 1: Commencement schedule determination."""
+        if section_number in (12, 56):
+            return cls.SECTION_12_AND_56
+        return cls.ALL_OTHER_SECTIONS
+
+
+# --- PART II: INCOME TAX ACT AMENDMENTS ---
+@dataclass
+class RelatedPerson:
+    """Section 2(a)(vii): Definition of Related Person."""
+    person_id: str
+    management_participation: bool = False
+    control_participation: bool = False
+    capital_participation: bool = False
+    marriage_consanguinity_affinity_association: bool = False
+
+    def is_related_to(self, other: 'RelatedPerson') -> bool:
+        """Determines direct/indirect control or relational association between two entities."""
+        direct_control = (
+            self.management_participation or 
+            self.control_participation or 
+            self.capital_participation
+        )
+        indirect_association = (
+            self.marriage_consanguinity_affinity_association and 
+            (other.management_participation or other.control_participation or other.capital_participation)
+        )
+        return direct_control or indirect_association
+
+
+class IncomeTaxActAmendments:
+    """Encapsulates amendments enacted in Part II (Sections 2 - 12) of the Finance Bill, 2025."""
+
+    @staticmethod
+    def section_2_amendments():
+        """Section 2: Definition Updates."""
+        return {
+            "debenture": "Deleted expression: 'and, for the purposes of paragraphs (d) and (e) of section 7(1) of this Act, includes any loan or loan stock, whether secured or unsecured'",
+            "individual_retirement_fund": "Deleted: 'subject to the Income Tax (Retirement Benefit) Rules'",
+            "royalty": "Expanded paragraph (b) to include: 'and includes the distribution of software where regular payments are made for the use of the software through the distributor'",
+            "compensating_tax": "DELETED",
+            "tribunal": "DELETED",
+            "venture_company": "DELETED",
+            "subsection_2": "DELETED"
+        }
+
+    @staticmethod
+    def section_3_daily_per_diem_limit(current_limit: float) -> float:
+        """
+        Section 3: Amends Section 5(2)(a)(iii) proviso.
+        Updates daily tax-free threshold from 2,000 KES to 10,000 KES.
+        """
+        NEW_LIMIT = 10000.00
+        return NEW_LIMIT
+
+    @staticmethod
+    def section_4_gender_neutrality_and_deletions():
+        """Section 4: Section 8 Amendments."""
+        return {
+            "gender_neutrality": "Substituted 'husband' with 'spouse' in subsection (1)",
+            "deleted_subsections": [4, 5, 6, 7, 9, "9A"]
+        }
+
+    @staticmethod
+    def section_5_withholding_tax_scope() -> List[str]:
+        """
+        Section 5: Amends Section 10(1) to insert new income streams.
+        """
+        return [
+            "(l) supply of goods to a public entity",
+            "(m) sale of scrap"
+        ]
+
+    @staticmethod
+    def section_6_digital_marketplace_tax():
+        """Section 6: Amends Section 12E for electronic networks and digital marketplace scope."""
+        return {
+            "scope_expansion": "Inserted 'the internet or an electronic network including through' immediately after 'carried out over'",
+            "deleted_paragraphs": ["subsection (3)(d)"]
+        }
+
+    @staticmethod
+    def calculate_minimum_top_up_tax_due_date(financial_year_end_date: date) -> date:
+        """
+        Section 7: Inserts Subsection 12G(3A).
+        Minimum top-up tax payable by end of the 4th month post fiscal year-end.
+        """
+        year = financial_year_end_date.year
+        month = financial_year_end_date.month + 4
+        if month > 12:
+            month -= 12
+            year += 1
+        
+        _, last_day = calendar.monthrange(year, month)
+        return date(year, month, last_day)
+
+    @staticmethod
+    def section_8_deductions_allowance():
+        """Section 8: Amends Section 15(2), (3), (4), (5), and (7)."""
+        return {
+            "diminution_of_implements": "100% deduction rate applied in that year of income for non-machinery implements/utensils employed in production",
+            "public_sports_facility": "Expenditure incurred in construction of public sports facility allowed",
+            "loss_carry_forward": "Tax loss carry-forward deduction period limited to five (5) succeeding years",
+            "cs_power_extension_deleted": "Subsection 15(5) allowing Cabinet Secretary extensions beyond 10 years DELETED"
+        }
+
+    @staticmethod
+    def section_9_disallowed_deductions():
+        """Section 9: Amends Section 16."""
+        return {
+            "compensating_tax": "Deleted 'including compensating tax' reference from section 16(2)(c)",
+            "subsection_4": "DELETED"
+        }
+
+    @staticmethod
+    def section_11_cbcr_notification(reporting_year_end: date) -> Dict[str, str]:
+        """
+        Section 11: Amends Section 18D(8) & (9).
+        Country-by-Country Reporting (CbCR) notification rules.
+        """
+        return {
+            "deadline": f"Must notify Commissioner by last day of reporting year: {reporting_year_end.strftime('%Y-%m-%d')}",
+            "requirement": "Submit notification regarding CbCR filing in designated format"
+        }
+
+
+@dataclass
+class AdvancePricingAgreement:
+    """
+    Section 12: Inserts Section 18G into the Income Tax Act.
+    Governance for Advance Pricing Agreements (APA) between Taxpayers and Commissioner.
+    """
+    agreement_id: str
+    taxpayer_id: str
+    commencement_date: date
+    duration_years: int
+    arm_length_methodology: str
+    is_misrepresented: bool = False
+
+    def validate_duration(self) -> bool:
+        """Subsection 18G(3): APA validity cannot exceed 5 consecutive years."""
+        return 0 < self.duration_years <= 5
+
+    def check_validity_status(self) -> Dict[str, Union[bool, str]]:
+        """Subsection 18G(4): Fraud / Misrepresentation Clause."""
+        if self.is_misrepresented:
+            return {
+                "status": "VOID",
+                "notice_required": True,
+                "action": "Commissioner shall declare the agreement void and issue a written notice of declaration to the person."
+            }
+        return {
+            "status": "VALID" if self.validate_duration() else "EXCEEDED_MAX_TERM",
+            "notice_required": False,
+            "action": "Active Advance Pricing Agreement."
+        }
 
 
 # ==============================================================================
-# SECTION 1: CITIZEN CIVIC GUIDE & STATUTORY BREAKDOWNS
+# SECTION 2: CITIZEN CIVIC GUIDE, ADVOCACY & CONSTITUTIONAL STRUCTURE
 # ==============================================================================
 
 @dataclass
@@ -33,8 +216,8 @@ class LegislativeBill:
     mover: Optional[str]
     sections: List[StatutoryProvision]
 
-# --- Finance Bill 2025 ---
-finance_bill_2025 = LegislativeBill(
+# --- Finance Bill 2025 Structured Record ---
+finance_bill_2025_civic_record = LegislativeBill(
     title="The Finance Bill, 2025",
     gazette_supplement="Kenya Gazette Supplement No. 63",
     bill_number="National Assembly Bills No. 19",
@@ -99,7 +282,7 @@ finance_bill_2025 = LegislativeBill(
     ]
 )
 
-# --- Finance Bill 2026 ---
+# --- Finance Bill 2026 Structured Record ---
 finance_bill_2026 = LegislativeBill(
     title="The Finance Bill, 2026",
     gazette_supplement="Kenya Gazette Supplement No. 113",
@@ -137,8 +320,7 @@ finance_bill_2026 = LegislativeBill(
 )
 
 
-# --- Public Participation Email Memorandum Generator ---
-
+# --- Public Participation Generator ---
 @dataclass
 class CitizenProfile:
     full_name: str
@@ -146,6 +328,7 @@ class CitizenProfile:
     county_constituency: str
     phone_number: str
     email_address: str
+
 
 class PublicParticipationMemorandum:
     RECIPIENT_TITLE = "The Clerk of the National Assembly"
@@ -190,46 +373,7 @@ Phone: {citizen.phone_number} | Email: {citizen.email_address}
 """
 
 
-# --- Human Rights, GBV, & Femicide Advocacy Framework ---
-
-@dataclass
-class GBVStatistics:
-    kdhs_physical_violence_women_pct: float = 34.0
-    kdhs_sexual_violence_women_pct: float = 13.0
-    annual_femicide_documented_cases: int = 150
-
-@dataclass
-class AdvocacyDemand:
-    target_body: str
-    mandate: str
-    action_items: List[str]
-
-gbv_advocacy_framework = {
-    "definitions": {
-        "GBV": "Any harmful act committed against a person based on socially ascribed gender differences (physical, sexual, psychological, or economic).",
-        "Femicide": "The intentional killing of women and girls because of their gender—the ultimate expression of misogyny and systemic violence."
-    },
-    "statistics": GBVStatistics(),
-    "civic_demands": [
-        AdvocacyDemand(
-            target_body="National Assembly & County Assemblies",
-            mandate="Budgetary Allocation",
-            action_items=["Allocate funds under Appropriation Acts for GBV Recovery Centres (GBVRCs) and safe shelters across all 47 counties."]
-        ),
-        AdvocacyDemand(
-            target_body="Law Enforcement & Judiciary",
-            mandate="Protection & Justice Enforcement",
-            action_items=[
-                "Establish dedicated Gender Desks staffed by specialized officers at every police station.",
-                "Rapid-track judicial processing of femicide and domestic violence cases under the Protection Against Domestic Violence Act (PADVA) 2015."
-            ]
-        )
-    ]
-}
-
-
-# --- Constitutional Structure (18 Chapters) ---
-
+# --- Constitutional Structure ---
 @dataclass
 class ConstitutionalChapter:
     number: int
@@ -260,7 +404,7 @@ kenya_constitution_chapters = [
 
 
 # ==============================================================================
-# SECTION 2: PARLIAMENTARY LEADERSHIP, SENATE & NATIONAL ASSEMBLY STRUCTURES
+# SECTION 3: PARLIAMENTARY STRUCTURE (SENATE & NATIONAL ASSEMBLY)
 # ==============================================================================
 
 @dataclass
@@ -277,8 +421,6 @@ class Committee:
     chairperson: str
     vice_chairperson: Optional[str] = None
 
-
-# --- 1. THE SENATE (THE UPPER HOUSE) ---
 
 class SenateStructure:
     PRIMARY_FUNCTION = (
@@ -317,35 +459,6 @@ class SenateStructure:
         Committee("Lands, Environment and Natural Resources", "Oversights land policy, environmental protection, natural resources.", "Sen. John Methu")
     ]
 
-    ELECTED_SENATORS = {
-        "Baringo": "Sen. William Cheptumo (UDA)", "Bomet": "Sen. Hillary Kiprotich Sigei (UDA)",
-        "Bungoma": "Sen. David Wakoli Wafula (FORD-Kenya)", "Busia": "Sen. Andrew Omtatah Okoiti (NRA)",
-        "Elgeyo Marakwet": "Sen. William Kisang (UDA)", "Embu": "Sen. Alexander Mundigi Munyi (Democratic Party)",
-        "Garissa": "Sen. Abdulkadir Mohamed Haji (Jubilee)", "Homa Bay": "Sen. Moses Otieno Kajwang' (ODM)",
-        "Isiolo": "Sen. Fatuma Adan Dullo (Jubilee)", "Kajiado": "Sen. Kanar Seki (UDA)",
-        "Kakamega": "Sen. Boni Khalwale (UDA)", "Kericho": "Sen. Aaron Kipkirui Cheruiyot (UDA)",
-        "Kiambu": "Sen. Karungo wa Thang'wa (UDA)", "Kilifi": "Sen. Justice Stewart M. Madzayo (ODM)",
-        "Kirinyaga": "Sen. James Kamau Murango (UDA)", "Kisii": "Sen. Richard Onyonka (ODM)",
-        "Kisumu": "Sen. Prof. Tom Ojienda, SC (ODM)", "Kitui": "Sen. Enoch Kiio Wambua (Wiper)",
-        "Kwale": "Sen. Issa Juma Boy (ODM)", "Laikipia": "Sen. John Kinyua Nderitu (UDA)",
-        "Lamu": "Sen. Joseph Githuku Kamau (UDA)", "Machakos": "Sen. Agnes Kavindu Muthama (Wiper)",
-        "Makueni": "Sen. Daniel Kitonga Maanzo (Wiper)", "Mandera": "Sen. Ali Roba Ibrahim (UDM)",
-        "Marsabit": "Sen. Mohamed Said Chute (UDA)", "Meru": "Sen. Kathuri Murungi (UDA)",
-        "Migori": "Sen. Eddy Gicheru Oketch (ODM)", "Mombasa": "Sen. Mohamed Faki Mwinyihaji (ODM)",
-        "Murang'a": "Sen. Joseph Kamau Nyutu (UDA)", "Nairobi": "Sen. Edwin Sifuna (ODM)",
-        "Nakuru": "Sen. Tabitha Karanja Keroche (UDA)", "Nandi": "Sen. Samson Cherargei (UDA)",
-        "Narok": "Sen. Ledama Olekina (ODM)", "Nyamira": "Sen. Okong'o Omogeni, SC (ODM)",
-        "Nyandarua": "Sen. John Methu (UDA)", "Nyeri": "Sen. Wahome Wamatinga (UDA)",
-        "Samburu": "Sen. Steve Lelegwe Ltumbesi (UDA)", "Siaya": "Sen. Oburu Oginga (ODM)",
-        "Taita Taveta": "Sen. Johnes Mwaruma (ODM)", "Tana River": "Sen. Danson Buya Mungatana (UDA)",
-        "Tharaka Nithi": "Sen. Mwenda Gataya Mo Fire (UDA)", "Trans Nzoia": "Sen. Allan Kiprotich Chesang (UDA)",
-        "Turkana": "Sen. James Lomenen Ekitela (UDA)", "Uasin Gishu": "Sen. Jackson Mandago (UDA)",
-        "Vihiga": "Sen. Godfrey Osotsi (ODM)", "Wajir": "Sen. Mohamed Abass Sheikh (UDM)",
-        "West Pokot": "Sen. Julius Murgor (UDA)"
-    }
-
-
-# --- 2. THE NATIONAL ASSEMBLY (THE LOWER HOUSE) ---
 
 class NationalAssemblyStructure:
     PRIMARY_FUNCTION = (
@@ -385,63 +498,42 @@ class NationalAssemblyStructure:
         Committee("Agriculture and Livestock", "Oversights national agricultural policy, crops, and livestock.", "Hon. John Mutunga")
     ]
 
-    CLERK_CONTACTS = {
-        "National Assembly": {
-            "title": "The Clerk of the National Assembly",
-            "office": "Main Parliament Buildings, P.O. Box 41842-00100, Nairobi",
-            "emails": ["clerk.nationalassembly@parliament.go.ke", "cna@parliament.go.ke"]
-        },
-        "Senate": {
-            "title": "The Clerk of the Senate",
-            "office": "Main Parliament Buildings, P.O. Box 41842-00100, Nairobi",
-            "emails": ["clerk.senate@parliament.go.ke"]
-        }
-    }
-
 
 # ==============================================================================
-# RUNTIME DEMONSTRATION & VERIFICATION
+# SECTION 4: UNIFIED RUNTIME EXECUTION
 # ==============================================================================
 
 if __name__ == "__main__":
-    print("==================================================================")
-    print("CIVIC GUIDE & INSTITUTIONAL FRAMEWORK OF 13TH PARLIAMENT OF KENYA")
-    print("==================================================================\n")
+    print(f"Loaded {BILL_TITLE} ({GAZETTE_SUPPLEMENT})")
+    
+    # 1. Section 12 Advance Pricing Agreement (APA) Validation Logic
+    apa = AdvancePricingAgreement(
+        agreement_id="APA-2026-001",
+        taxpayer_id="P051234567X",
+        commencement_date=date(2026, 1, 1),
+        duration_years=5,
+        arm_length_methodology="Transactional Net Margin Method (TNMM)",
+        is_misrepresented=False
+    )
+    print(f"Section 12 APA Status: {apa.check_validity_status()}")
 
-    # 1. Legislative Bills Summary
-    print(f"--- LEGISLATIVE BILL: {finance_bill_2025.title} ---")
-    print(f"Status: {finance_bill_2025.enactment_status} ({finance_bill_2025.gazette_supplement})")
-    for sec in finance_bill_2025.sections[:2]:
-        print(f"\n[{sec.section_number}: {sec.title}]")
-        print(f"Text: {sec.statutory_text}")
-        print(f"Plain Translation: {sec.plain_translation}")
+    # 2. Section 3 Per Diem Limit Update
+    new_limit = IncomeTaxActAmendments.section_3_daily_per_diem_limit(2000.0)
+    print(f"Section 3 New Daily Tax-Free Per Diem Limit: KES {new_limit:,.2f}")
 
-    print(f"\n--- LEGISLATIVE BILL: {finance_bill_2026.title} ---")
-    print(f"Status: {finance_bill_2026.enactment_status} ({finance_bill_2026.gazette_supplement})")
-    for sec in finance_bill_2026.sections:
-        print(f"\n[{sec.section_number}: {sec.title}]")
-        print(f"Plain Translation: {sec.plain_translation}")
-
-    # 2. Public Participation Email Generator
+    # 3. Public Participation Memorandum Generation
     sample_citizen = CitizenProfile(
-        full_name="Amina Otieno Wanjiku",
+        full_name="Esther Mutheu Johnson",
         national_id="38291047",
         county_constituency="Nairobi County / Lang'ata Constituency",
         phone_number="+254 712 345 678",
-        email_address="amina.otieno@example.com"
+        email_address="esther.mutheu@example.com"
     )
-    print("\n==================================================================")
-    print("GENERATING PUBLIC PARTICIPATION MEMORANDUM EMAIL")
-    print("==================================================================\n")
-    email_output = PublicParticipationMemorandum.generate_email_text(sample_citizen)
-    print(email_output)
+    print("\n--- PUBLIC PARTICIPATION MEMORANDUM SAMPLE ---")
+    print(PublicParticipationMemorandum.generate_email_text(sample_citizen))
 
-    # 3. Senate & National Assembly Overview
-    print("==================================================================")
-    print("PARLIAMENTARY STRUCTURES")
-    print("==================================================================")
+    # 4. Parliamentary Leadership Summary
+    print("\n--- PARLIAMENTARY LEADERSHIP ---")
     print(f"Senate Speaker: {SenateStructure.LEADERSHIP['Speaker'].name}")
-    print(f"Senate Majority Leader: {SenateStructure.LEADERSHIP['Majority Leader'].name}")
     print(f"National Assembly Speaker: {NationalAssemblyStructure.LEADERSHIP['Speaker'].name}")
-    print(f"National Assembly Majority Leader: {NationalAssemblyStructure.LEADERSHIP['Majority Leader'].name}")
     print(f"Finance Committee Chair (NA): {NationalAssemblyStructure.COMMITTEES[0].chairperson}")
