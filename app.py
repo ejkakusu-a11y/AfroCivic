@@ -1,12 +1,3 @@
-"""
-Unified Civic, Statutory, and Legislative Framework (Kenya)
-------------------------------------------------------------
-1. Finance Bill 2025 (Part I & Part II Object-Oriented Tax Implementation)
-2. Finance Bill 2026 Statutory & Plain-Language Breakdowns
-3. Public Participation Email Generator & Civic Advocacy Frameworks
-4. 13th Parliament of Kenya (Senate & National Assembly Structure & Leadership)
-"""
-
 import calendar
 from dataclasses import dataclass, field
 from datetime import date
