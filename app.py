@@ -1,3 +1,4 @@
+"""
 Comprehensive Civic Guide & Institutional Framework of the 13th Parliament of Kenya
 ----------------------------------------------------------------------------------
 This script encodes statutory breakdowns, public participation memorandum generators,
